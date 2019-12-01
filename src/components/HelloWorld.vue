@@ -26,14 +26,37 @@
       <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
     </ul>
+    <div>
+      <input type="text" @input="checkInput">
+      <select name="" class="select" id="">
+        <option value="111">111</option>
+        <option value="111">222</option>
+        <option value="111">333</option>
+      </select>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'HelloWorld',
+  data(){
+    return {
+      time:null
+    }
+  },
   props: {
     msg: String
+  },
+  methods:{
+    //input输入防抖控制
+    checkInput(){
+      //console.log(111)
+      if(this.time) window.clearInterval(this.time)
+      this.time = setTimeout(()=>{
+        console.log(111)
+      },1000)
+    }
   }
 }
 </script>
@@ -53,5 +76,9 @@ li {
 }
 a {
   color: #42b983;
+}
+.select {
+  direction: rtl;
+  
 }
 </style>
