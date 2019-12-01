@@ -3,6 +3,10 @@
 
 ![](https://github.com/bettermu/blog-picture-store/blob/master/my-calender/2.gif?raw=true)
 
+> 关于2026年2月展示，如下，我们可以看出来，实际上整个2月，也就28天，巧合的是，刚好占了4*7 的空格，那么我们需要考虑到，空最后两行的情况，最终效果如下：
+
+![](https://github.com/bettermu/blog-picture-store/blob/master/my-calender/1.png?raw=true)
+
 ### 2019.12.1
 
 * 布局和样式，三段：
