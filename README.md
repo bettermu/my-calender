@@ -1,4 +1,7 @@
 ## 手写一个日历控件的思路
+> 效果如下：目前只做了切换月份的交互，处理了2026.2月特殊情况的展示问题，后续有时间，将继续完善交互，增加功能
+
+![](https://github.com/bettermu/blog-picture-store/blob/master/my-calender/2.gif?raw=true)
 
 ### 2019.12.1
 
