@@ -10,8 +10,12 @@
         </div>
         <div class="day-wrap">
             <div class="p-day out-cur" v-for="(item,index) in daysObj.beforeDays"><span>{{item.day}}</span></div>
-            <div class="p-day" :class="{now:isToday(item),cur:isCurDay(item)}" v-for="(item,index) in daysObj.currentDays"><span>{{item.day}}</span></div>
+            <div class="p-day" :class="{'now':isToday(item),'cur':isCurDay(item),'out-cur':isDisabled(item)}" v-for="(item,index) in daysObj.currentDays"><span>{{item.day}}</span></div>
             <div class="p-day out-cur" v-for="(item,index) in daysObj.afterDays"><span>{{item.day}}</span></div>
+        </div>
+        <div class="option-wrap">
+            <span>当天</span>
+
         </div>
     </div>
 </template>
@@ -38,6 +42,8 @@ export default {
             nowDay:'',
             daysObj:{},
             tag:'-',  //日期格式化分割符
+            disStart:'',
+            disEnd:''
         }
     },
 
@@ -57,12 +63,14 @@ export default {
         addZero(num){
             return num >9 ? ''+num : '0'+num
         },
-
         isToday(item){
             return this.dateFormat(this.nowYear,this.addZero(this.nowMonth),this.nowDay,this.tag) === item.format    //this.nowYear === item.year && this.nowMonth === item.month && this.nowDay === item.day
         },
         isCurDay(item){
             return this.dateFormat(this.year,this.addZero(this.month),this.day,this.tag) === item.format //return this.year === item.year && this.month === item.month && this.day === item.day
+        },
+        isDisabled(item){
+            return (new Date(item.format) < new Date(this.disStart) || new Date(item.format) > new Date(this.disEnd))
         },
 
         //封装日期format（默认使用 - 连接）
@@ -128,19 +136,39 @@ export default {
                 })
             }
             //当当月天数排完之后，还剩一行多的情况
-           if(beforeDays.length + currentDays.length + 6 - afterWeek === 35 ){
+            
+        //    if(beforeDays.length + currentDays.length + 6 - afterWeek === 35 ){
 
-               for(let i = 0;i<13 - afterWeek;i++){
-                   afterDays.push({
-                       year:year,
-                       month:month === 12 ? 1 : month +1,
-                       day:i+1,
-                       format: this.dateFormat(year,this.addZero(month === 12 ? 1 : month +1),this.addZero(i+1),this.tag)
-                   })
-               }
+        //        for(let i = 0;i<13 - afterWeek;i++){
+        //            afterDays.push({
+        //                year:year,
+        //                month:month === 12 ? 1 : month +1,
+        //                day:i+1,
+        //                format: this.dateFormat(year,this.addZero(month === 12 ? 1 : month +1),this.addZero(i+1),this.tag)
+        //            })
+        //        }
 
-           } else if(beforeDays.length + currentDays.length + 6 - afterWeek === 28){ //2026年2月 最后会空两行出来
-               for(let i = 0;i<20 - afterWeek;i++){
+        //    } else if(beforeDays.length + currentDays.length + 6 - afterWeek === 28){ //2026年2月 最后会空两行出来
+        //        for(let i = 0;i<20 - afterWeek;i++){
+        //            afterDays.push({
+        //                year:year,
+        //                month:month === 12 ? 1 : month +1,
+        //                day:i+1,
+        //                format:this.dateFormat(year,this.addZero(month === 12 ? 1 : month +1),this.addZero(i+1),this.tag)
+        //            })
+        //        }
+        //    }else {
+        //     for(let i = 0;i<6 - afterWeek;i++){
+        //            afterDays.push({
+        //                year:year,
+        //                month:month === 12 ? 1 : month +1,
+        //                day:i+1,
+        //                format:this.dateFormat(year,this.addZero(month === 12 ? 1 : month +1),this.addZero(i+1),this.tag)
+        //            })
+        //        }
+        //    }
+
+           for(let i = 0;i<6 - afterWeek;i++){
                    afterDays.push({
                        year:year,
                        month:month === 12 ? 1 : month +1,
@@ -148,26 +176,11 @@ export default {
                        format:this.dateFormat(year,this.addZero(month === 12 ? 1 : month +1),this.addZero(i+1),this.tag)
                    })
                }
-           }else {
-            for(let i = 0;i<6 - afterWeek;i++){
-                   afterDays.push({
-                       year:year,
-                       month:month === 12 ? 1 : month +1,
-                       day:i+1,
-                       format:this.dateFormat(year,this.addZero(month === 12 ? 1 : month +1),this.addZero(i+1),this.tag)
-                   })
-               }
-           }
 
            this.daysObj = {beforeDays,currentDays,afterDays} // [...beforeDays,...currentDays,...afterDays]
            console.log(this.daysObj)
-
         }
-
-        
     }
-
-    
 }
 </script>
 
@@ -178,11 +191,17 @@ export default {
     .calender-wrap {
         width:350px;
         margin:0 auto;
+        background-color:#fff;
+        box-shadow:0 10px 3px -5px #f2f2f2;
+        border:1px solid #ddd;
+        border-radius:5px;
         .c-head {
             height:30px;
-            border:1px solid #ccc;
+            color:#fff;
+            border-bottom:1px solid #ccc;
             display:flex;
             line-height:30px;
+            background-color:rgb(127, 201, 243);
             .prev-month {
                 flex:1;
             }
@@ -194,8 +213,8 @@ export default {
             }
         }
         .c-week {
-            border:1px solid #ccc;
-            
+            border-bottom:1px solid #ccc;
+            color:rgb(12, 156, 240);
             display:flex;
             justify-content: space-around;
             align-items: center;
@@ -205,7 +224,8 @@ export default {
             }
         }
         .day-wrap {
-            border:1px solid #ccc;
+            // border:1px solid #ccc;
+            border-bottom:1px solid #ccc;
             display:flex;
             justify-content: space-around;
             flex-wrap:wrap;
@@ -224,6 +244,9 @@ export default {
                 }
                 &.out-cur {
                     color:#ddd;
+                    span {
+                        display:none;
+                    }
                 }
                 &.cur {
                     span {
@@ -236,7 +259,7 @@ export default {
                 &.now {
                     span {
                         color:#fff;
-                        background-color:rgb(252, 57, 57);
+                        background-color:rgb(243, 92, 92);
                         border-radius:50%;
                     }
                     
