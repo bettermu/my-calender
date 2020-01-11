@@ -2,7 +2,7 @@
     <div class="calender-wrap">
         <div class="c-head">
             <div class="prev-month cp" @click="changeMonth('prev')"> < </div>
-            <div class="current-date">{{year}}年{{month}}月{{day}}日</div>
+            <div class="current-date">{{year}}年{{month}}月</div>
             <div class="next-month cp" @click="changeMonth('next')"> > </div>
         </div>
         <div class="c-week">
@@ -36,7 +36,8 @@ export default {
             nowYear:'',
             nowMonth:'',
             nowDay:'',
-            daysObj:{}
+            daysObj:{},
+            tag:'-',  //日期格式化分割符
         }
     },
 
@@ -52,16 +53,24 @@ export default {
 
     methods:{
 
-        isToday(item){
-            return this.nowYear === item.year && this.nowMonth === item.month && this.nowDay === item.day
-        },
-        isCurDay(item){
-            return this.year === item.year && this.month === item.month && this.day === item.day
+        //个位数补零操作
+        addZero(num){
+            return num >9 ? ''+num : '0'+num
         },
 
+        isToday(item){
+            return this.dateFormat(this.nowYear,this.addZero(this.nowMonth),this.nowDay,this.tag) === item.format    //this.nowYear === item.year && this.nowMonth === item.month && this.nowDay === item.day
+        },
+        isCurDay(item){
+            return this.dateFormat(this.year,this.addZero(this.month),this.day,this.tag) === item.format //return this.year === item.year && this.month === item.month && this.day === item.day
+        },
+
+        //封装日期format（默认使用 - 连接）
+        dateFormat(...time){
+            return time.slice(0,3).join(time.slice(-1))
+        },
         changeMonth(flag){
             if(flag === 'prev'){
-                //上个月
                 this.month = this.month === 1 ? 12 : --this.month
                 this.year = this.month === 12 ? --this.year:this.year
                 this.getFirstDay(this.year,this.month)
@@ -69,8 +78,7 @@ export default {
                 //下个月
                 this.month = this.month === 12? 1:++this.month
                 this.year = this.month === 1?++this.year:this.year
-                this.getFirstDay(this.year,this.month)
-                
+                this.getFirstDay(this.year,this.month) 
             }
         },
         getInitDate(){
@@ -81,6 +89,7 @@ export default {
             this.getFirstDay(this.year,this.month)
         },
 
+        //获取日期列表
         getFirstDay(year,month){
             //获取该月第一天是周几
             let weekday = new Date(`${year}-${month}-01`).getDay()
@@ -95,8 +104,9 @@ export default {
             for(let i=0;i<days;i++){
                 beforeDays.push({
                     year:year,
-                    month:month-1,
-                    day:i+1
+                    month: month === 1 ? 12 : month-1,
+                    day:i+1,
+                    format: this.dateFormat(year,this.addZero(month === 1 ? 12 : month-1),this.addZero(i+1),this.tag)
                 })
             }
             //只留下显示的日期
@@ -113,7 +123,8 @@ export default {
                 currentDays.push({
                     year: year,
                     month: month,
-                    day: j + 1
+                    day: j + 1,
+                    format:this.dateFormat(year,this.addZero(month),this.addZero(j+1),this.tag)
                 })
             }
             //当当月天数排完之后，还剩一行多的情况
@@ -122,8 +133,9 @@ export default {
                for(let i = 0;i<13 - afterWeek;i++){
                    afterDays.push({
                        year:year,
-                       month:month + 1,
-                       day:i+1
+                       month:month === 12 ? 1 : month +1,
+                       day:i+1,
+                       format: this.dateFormat(year,this.addZero(month === 12 ? 1 : month +1),this.addZero(i+1),this.tag)
                    })
                }
 
@@ -131,21 +143,24 @@ export default {
                for(let i = 0;i<20 - afterWeek;i++){
                    afterDays.push({
                        year:year,
-                       month:month + 1,
-                       day:i+1
+                       month:month === 12 ? 1 : month +1,
+                       day:i+1,
+                       format:this.dateFormat(year,this.addZero(month === 12 ? 1 : month +1),this.addZero(i+1),this.tag)
                    })
                }
            }else {
             for(let i = 0;i<6 - afterWeek;i++){
                    afterDays.push({
                        year:year,
-                       month:month + 1,
-                       day:i+1
+                       month:month === 12 ? 1 : month +1,
+                       day:i+1,
+                       format:this.dateFormat(year,this.addZero(month === 12 ? 1 : month +1),this.addZero(i+1),this.tag)
                    })
                }
            }
 
            this.daysObj = {beforeDays,currentDays,afterDays} // [...beforeDays,...currentDays,...afterDays]
+           console.log(this.daysObj)
 
         }
 
@@ -205,6 +220,7 @@ export default {
                     width:25px;
                     line-height:25px;
                     text-align: center;
+                    cursor: pointer;
                 }
                 &.out-cur {
                     color:#ddd;
