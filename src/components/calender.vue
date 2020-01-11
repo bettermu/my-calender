@@ -9,7 +9,9 @@
             <div class="p-week" v-for="(item,index) in weekArr" >{{item}}</div>
         </div>
         <div class="day-wrap">
-            <div class="p-day" v-for="(item,index) in daysArr">{{item.day}}</div>
+            <div class="p-day out-cur" v-for="(item,index) in daysObj.beforeDays"><span>{{item.day}}</span></div>
+            <div class="p-day" :class="{now:isToday(item),cur:isCurDay(item)}" v-for="(item,index) in daysObj.currentDays"><span>{{item.day}}</span></div>
+            <div class="p-day out-cur" v-for="(item,index) in daysObj.afterDays"><span>{{item.day}}</span></div>
         </div>
     </div>
 </template>
@@ -31,14 +33,17 @@ export default {
             year:'',
             month:'',
             day:'',
-            daysArr:[]
+            nowYear:'',
+            nowMonth:'',
+            nowDay:'',
+            daysObj:{}
         }
     },
 
     computed:{
         beginDay(){
             return new Date(this.year,this.month-1,1).getDay()
-        }
+        },
     },
 
     created(){
@@ -46,6 +51,13 @@ export default {
     },
 
     methods:{
+
+        isToday(item){
+            return this.nowYear === item.year && this.nowMonth === item.month && this.nowDay === item.day
+        },
+        isCurDay(item){
+            return this.year === item.year && this.month === item.month && this.day === item.day
+        },
 
         changeMonth(flag){
             if(flag === 'prev'){
@@ -63,9 +75,9 @@ export default {
         },
         getInitDate(){
             const date = new Date()
-            this.year = date.getFullYear()
-            this.month = date.getUTCMonth() + 1
-            this.day = date.getDate()
+            this.nowYear = this.year = date.getFullYear()
+            this.nowMonth = this.month = date.getUTCMonth() + 1
+            this.nowDay = this.day = date.getDate()
             this.getFirstDay(this.year,this.month)
         },
 
@@ -133,7 +145,7 @@ export default {
                }
            }
 
-           this.daysArr = [...beforeDays,...currentDays,...afterDays]
+           this.daysObj = {beforeDays,currentDays,afterDays} // [...beforeDays,...currentDays,...afterDays]
 
         }
 
@@ -186,6 +198,34 @@ export default {
                 width:49px;
                 height:30px;
                 line-height:30px;
+                text-align: center;
+                span {
+                    display:inline-block;
+                    height:25px;
+                    width:25px;
+                    line-height:25px;
+                    text-align: center;
+                }
+                &.out-cur {
+                    color:#ddd;
+                }
+                &.cur {
+                    span {
+                        color:#fff;
+                        background-color:#eee;
+                        border-radius:50%;
+                    }
+                    
+                }
+                &.now {
+                    span {
+                        color:#fff;
+                        background-color:rgb(252, 57, 57);
+                        border-radius:50%;
+                    }
+                    
+                }
+                
             }
         }
     }
